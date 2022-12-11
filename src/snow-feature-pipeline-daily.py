@@ -4,10 +4,10 @@ import modal
 LOCAL=False
 
 if LOCAL == False:
-   stub = modal.Stub("snow_daily")
+   stub = modal.Stub("snomodw_data_daily")
    image = modal.Image.debian_slim().pip_install(["hopsworks==3.0.4", "lxml"]) 
 
-   @stub.function(image=image, schedule=modal.Period(days=1), secret=modal.Secret.from_name("scalable"))
+   @stub.function(image=image, schedule=modal.Period(days=1), secret=modal.Secret.from_name("SNOW_API_KEY"))
    def f():
        g()
 
@@ -16,7 +16,7 @@ def g():
     import lxml
     import pandas as pd
 
-    project = hopsworks.login()
+    project = hopsworks.login(project="finetune")
     fs = project.get_feature_store()
 
     snow_df = pd.read_xml("http://dati.meteotrentino.it/service.asmx/tuttiUltimiRilieviNeve")
