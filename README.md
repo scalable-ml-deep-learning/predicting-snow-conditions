@@ -9,7 +9,7 @@
 
 [Snow data Trentino](https://dati.trentino.it/dataset/dati-recenti-dei-campi-neve/resource/0bbde12d-348d-43ea-8a30-078d59df5188): download data of eight days and update daily
 
-[Passo Rolle position](https://goo.gl/maps/G3Qw8WNvZ19ojKEK7)
+[Passo Rolle position](https://goo.gl/maps/G3Qw8WNvZ19ojKEK7) 2012m altitude, 31RO code
 
 ## Useful commands
 
