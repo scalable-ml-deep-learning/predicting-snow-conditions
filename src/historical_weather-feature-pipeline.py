@@ -1,23 +1,21 @@
 import os
 import pandas as pd
 import hopsworks
-import json
-from dict2xml import dict2xml
 from urllib.request import urlopen
+import json
 
 #project = hopsworks.login(project="finetune")
 #fs = project.get_feature_store()
 
-response = urlopen("https://api.open-meteo.com/v1/forecast?latitude=46.2979&longitude=11.7871&models=best_match&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours&current_weather=true&timezone=auto&start_date=2022-12-04&end_date=2022-12-12")
+url = "https://api.open-meteo.com/v1/forecast?latitude=46.2979&longitude=11.7871&models=best_match&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours&current_weather=true&timezone=auto&start_date=2022-12-04&end_date=2022-12-12"  
+# store the response of URL
+response = urlopen(url)
+# storing the JSON response from url in data
 data_json = json.loads(response.read())
-xml = dict2xml(data_json)
+# convert dictionary to dataframe
+weather_df = pd.DataFrame.from_dict(data_json['daily'], orient='columns')
 
-weather_df = pd.read_xml(xml)
-
-#weather_df.drop(['latitude', 'longitude', 'generationtime_ms', 'timezone', 'current_weather', 'utc_offset_seconds', 'timezone_abbreviation', 'elevation', 'daily_units'], axis='columns', inplace=True)
-#weather_df.dropna(inplace=True)
-
-print(weather_df)
+print("Historical weather:\n", weather_df)
 
 '''
 weather_fg = fs.get_or_create_feature_group(
