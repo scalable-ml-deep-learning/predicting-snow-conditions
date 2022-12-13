@@ -13,6 +13,8 @@
 
 XGBoost model: [tutorial on timeseries for weather forecasting](https://www.kaggle.com/code/robikscube/tutorial-time-series-forecasting-with-xgboost), [XGBoost API Reference Python](https://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn).
 
+GCP Deep Learning: [tutorial](https://medium.com/google-cloud/how-to-run-deep-learning-models-on-google-cloud-platform-in-6-steps-4950a57acfa5)
+
 ## Useful commands
 
 `modal token set --token-id <your_token-id> --token-secret <your_token-secret> --env=scalable_ml-deep-learning`
