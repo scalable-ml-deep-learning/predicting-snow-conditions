@@ -39,6 +39,7 @@ def g():
         #print(value_date)
         snow_df.replace(to_replace=value, value=value_date, inplace = True)
 
+    snow_df.rename(columns = {'dataMis':'time'}, inplace = True)
     print(snow_df)
 
     snow_fg = fs.get_feature_group(name="snow_data",version=1)

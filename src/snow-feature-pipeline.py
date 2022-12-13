@@ -27,12 +27,15 @@ for value in snow_df['dataMis'].values:
   value_date = f'{year}-{month}-{day}'
   #print(value_date)
   snow_df.replace(to_replace=value, value=value_date, inplace = True)
+  
+snow_df.rename(columns = {'dataMis':'time'}, inplace = True)
+
 
 print(snow_df)
 
 snow_fg = fs.get_or_create_feature_group(
     name="snow_data",
     version=1,
-    primary_key=["dataMis"], 
+    primary_key=["time"], 
     description="Snow level dataset")
 snow_fg.insert(snow_df, write_options={"wait_for_job" : False})
