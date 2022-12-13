@@ -1,2 +1,3 @@
 # Everything beginning with .
 .*
+src/.*
