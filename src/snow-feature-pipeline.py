@@ -31,9 +31,8 @@ for value in snow_df['dataMis'].values:
 print(snow_df)
 
 snow_fg = fs.get_or_create_feature_group(
-    name="snow_level",
+    name="snow_data",
     version=1,
     primary_key=["dataMis"], 
     description="Snow level dataset")
 snow_fg.insert(snow_df, write_options={"wait_for_job" : False})
-
