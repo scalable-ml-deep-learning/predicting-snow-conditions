@@ -19,10 +19,10 @@ print(snow_df)
 #################
 # convert dates to timestamp to prepare join
 for value in  snow_df['dataMis'].values:
-  value = value.split(" ")[0]
-  print("Value: ", value)
-  new_value = time.mktime(datetime.datetime.strptime(value, "%d/%m/%Y").timetuple())
-  print("New value: ", new_value)
+  value_date = value.split(" ")[0]
+  #print("Value: ", value_date)
+  new_value = time.mktime(datetime.datetime.strptime(value_date, "%d/%m/%Y").timetuple())
+  #print("New value: ", new_value)
   snow_df.replace(to_replace=value, value=new_value, inplace = True)
 
 print(snow_df)

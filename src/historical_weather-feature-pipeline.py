@@ -24,9 +24,9 @@ print("Historical weather:\n", weather_df)
 print("Time:\n", weather_df['time'])
 # convert dates to timestamp to prepare join
 for value in  weather_df['time'].values:
-  print("Value: ", value)
+  #print("Value: ", value)
   new_value = time.mktime(datetime.datetime.strptime(value, "%Y-%m-%d").timetuple())
-  print("New value: ", new_value)
+  #print("New value: ", new_value)
   weather_df.replace(to_replace=value, value=new_value, inplace = True)
 
 print("New historical weather:\n", weather_df)
