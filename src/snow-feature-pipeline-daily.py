@@ -1,7 +1,9 @@
 import os
 import modal
+import time
+import datetime
 
-LOCAL=False
+LOCAL=True
 
 if LOCAL == False:
    stub = modal.Stub("snow_level_data_daily")
@@ -24,8 +26,16 @@ def g():
     snow_df.drop(['codStaz', 'oraDB','ww', 'v', 'vq1', 'vq2', 'n', 'ta', 'tmin', 'tmax', 'hn', 'fi', 't10', 't30', 'pr', 'cs', 's', 'b'], axis='columns', inplace=True)
     snow_df.dropna(inplace=True)
     snow_df = snow_df.iloc[:1]
-    print(snow_df)
+    #print(snow_df)
+    
+    for value in  snow_df['dataMis'].values:
+        value_date = value.split(" ")[0]
+        #print("Value: ", value_date)
+        new_value = time.mktime(datetime.datetime.strptime(value_date, "%d/%m/%Y").timetuple())
+        #print("New value: ", new_value)
+        snow_df.replace(to_replace=value, value=new_value, inplace = True)
 
+    print(snow_df)
     snow_fg = fs.get_feature_group(name="snow_level",version=1)
     snow_fg.insert(snow_df, write_options={"wait_for_job" : False})
 
