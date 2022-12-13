@@ -11,6 +11,8 @@
 
 [Passo Rolle position](https://goo.gl/maps/G3Qw8WNvZ19ojKEK7) 2012m altitude, 31RO code
 
+XGBoost model: [tutorial on timeseries for weather forecasting](https://www.kaggle.com/code/robikscube/tutorial-time-series-forecasting-with-xgboost), [XGBoost API Reference Python](https://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn).
+
 ## Useful commands
 
 `modal token set --token-id <your_token-id> --token-secret <your_token-secret> --env=scalable_ml-deep-learning`
