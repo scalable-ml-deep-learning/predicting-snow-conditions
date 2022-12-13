@@ -1,5 +1,7 @@
 import os
 import modal
+from urllib.request import urlopen
+import json
 
 LOCAL=False
 
