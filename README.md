@@ -11,7 +11,7 @@
 
 [Passo Rolle position](https://goo.gl/maps/G3Qw8WNvZ19ojKEK7) 2012m altitude, 31RO code
 
-XGBoost model: [tutorial on timeseries for weather forecasting](https://www.kaggle.com/code/robikscube/tutorial-time-series-forecasting-with-xgboost), [XGBoost API Reference Python](https://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn).
+XGBoost model: [tutorial on timeseries for weather forecasting](https://www.kaggle.com/code/robikscube/tutorial-time-series-forecasting-with-xgboost), [XGBoost API Reference Python](https://xgboost.readthedocs.io/en/latest/python/python_api.html#module-xgboost.sklearn). Difference between [.train()](https://xgboost.readthedocs.io/en/stable/python/python_api.html#module-xgboost.training) and [.fit()](https://xgboost.readthedocs.io/en/stable/python/python_api.html#module-xgboost.sklearn) can be found [here](https://stackoverflow.com/questions/47152610/what-is-the-difference-between-xgb-train-and-xgb-xgbregressor-or-xgb-xgbclassif). Both are to train a model. In the case of XGBoost, one can use xgboost.train() to train a model on the passed data. Or use the Scikit-Learn API, where different XGBoost models can be applied, for example, xgboost.XGBRegressor, xgboost.XGBClassifier, xgboost.XGBRanker, and many others. These last are Scikit-Learn wrappers, meaning that are fine-tuned models that perform feature selection to reduce the number of predictors used to train the model. More information can be foound in [this](https://towardsdatascience.com/feature-selection-for-machine-learning-in-python-wrapper-methods-2b5e27d2db31) blog post.
 
 GCP Deep Learning: [tutorial](https://medium.com/google-cloud/how-to-run-deep-learning-models-on-google-cloud-platform-in-6-steps-4950a57acfa5)
 
