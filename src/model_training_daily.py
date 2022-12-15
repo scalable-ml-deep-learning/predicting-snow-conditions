@@ -34,8 +34,8 @@ def g():
     # You can read training data, randomly split into train/test sets of features (X) and labels (y)        
     X_train, X_test, y_train, y_test = feature_view.train_test_split(0.2)
 
-    X_train = X_train.sort_values(by=["time"], ascending=[False]).reset_index(drop=True)
-    X_test = X_test.sort_values(by=["time"], ascending=[False]).reset_index(drop=True)
+    X_train = X_train.sort_values(by=["time"], ascending=[True]).reset_index(drop=True)
+    X_test = X_test.sort_values(by=["time"], ascending=[True]).reset_index(drop=True)
     
     X_train = X_train.drop(columns=["time"]).fillna(0)
     X_test = X_test.drop(columns=["time"]).fillna(0)
