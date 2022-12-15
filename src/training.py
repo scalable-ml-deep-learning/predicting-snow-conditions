@@ -31,6 +31,7 @@ def g():
     import xgboost as xgb   
     import numpy as np
     from sklearn.metrics import precision_score, recall_score, accuracy_score
+    from sklearn.metrics import mean_squared_error as MSE
 
     # You have to set the environment variable 'HOPSWORKS_API_KEY' for login to succeed
     project = hopsworks.login(project="finetune")
@@ -50,47 +51,38 @@ def g():
     X_train = X_train.drop(columns=["time"]).fillna(0)
     X_test = X_test.drop(columns=["time"]).fillna(0)
 
-    #y = X.pop("aqi_next_day")
-    #gb = GradientBoostingRegressor()
-    #gb.fit(X, y)
+    # need DMatrix for xgb.train()
+    #D_train = xgb.DMatrix(X_train, label=y_train)
+    #D_test = xgb.DMatrix(X_test, label=y_test)
 
-    D_train = xgb.DMatrix(X_train, label=y_train, enable_categorical=True)
-    D_test = xgb.DMatrix(X_test, label=y_test, enable_categorical=True)
+    #param = {
+    #'eta': 0.3, 
+    #'max_depth': 3,  
+    #'objective': 'multi:softprob',  
+    #'num_class': } 
 
-    param = {
-    'eta': 0.3, 
-    'max_depth': 3,  
-    'objective': 'multi:softprob',  
-    'num_class': 3} 
+    #steps = 1 
 
-    steps = 1 
+    #model = xgb.train(param, D_train, steps)
 
-    model = xgb.train(param, D_train, steps)
-
-    preds = model.predict(D_test)
-    best_preds = np.asarray([np.argmax(line) for line in preds])
-
-    print("Precision = {}".format(precision_score(y_test, best_preds, average='macro')))
-    print("Recall = {}".format(recall_score(y_test, best_preds, average='macro')))
-    print("Accuracy = {}".format(accuracy_score(y_test, best_preds)))
+    xgb_r = xgb.XGBRegressor(objective ='reg:linear',
+                  n_estimators = 10, seed = 123)
     
-    
-    # Train our model with the Scikit-learn K-nearest-neighbors algorithm using our features (X_train) and labels (y_train)
-    #model = KNeighborsClassifier(n_neighbors=2)
-    #model.fit(X_train, y_train.values.ravel())
+    print("X_train:", X_train)
+    print("y_train", y_train)
+    print("X_test:", X_test)
+    print("y_test", y_test)
 
-    # Evaluate model performance using the features from the test set (X_test)
-    #y_pred = model.predict(X_test)
+    # Fitting the model
+    xgb_r.fit(X_train, y_train)
 
-    # Compare predictions (y_pred) with the labels in the test set (y_test)
-    #metrics = classification_report(y_test, y_pred, output_dict=True)
-    #results = confusion_matrix(y_test, y_pred)
-
-    # Create the confusion matrix as a figure, we will later store it as a PNG image file
-    #df_cm = pd.DataFrame(results, ['True Setosa', 'True Versicolor', 'True Virginica'],
-                         #['Pred Setosa', 'Pred Versicolor', 'Pred Virginica'])
-    #cm = sns.heatmap(df_cm, annot=True)
-    #fig = cm.get_figure()
+    pred = xgb_r.predict(X_test)
+ 
+    # RMSE Computation
+    rmse = np.sqrt(MSE(y_test, pred))
+    print("RMSE : % f" %(rmse))
+    print("prediction:", pred)
+    print("real values:", y_test)
 
     # We will now upload our model to the Hopsworks Model Registry. First get an object for the model registry.
     #mr = project.get_model_registry()
@@ -103,7 +95,6 @@ def g():
     # Save both our model and the confusion matrix to 'model_dir', whose contents will be uploaded to the model registry
     #joblib.dump(model, model_dir + "/iris_model.pkl")
     #fig.savefig(model_dir + "/confusion_matrix.png")    
-
 
     # Specify the schema of the model's input/output using the features (X_train) and labels (y_train)
     #input_schema = Schema(X_train)
