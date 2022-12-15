@@ -1,13 +1,11 @@
 import os
 import modal
-from sklearn import datasets
-import xgboost as xgb 
 
-LOCAL=True
+LOCAL=False
 
 if LOCAL == False:
-   stub = modal.Stub()
-   image = modal.Image.debian_slim().apt_install(["libgomp1"]).pip_install(["hopsworks==3.0.4", "seaborn", "joblib", "scikit-learn"])
+   stub = modal.Stub("snow_model_training_daily")
+   image = modal.Image.debian_slim().pip_install(["hopsworks==3.0.4", "joblib", "scikit-learn", "xgboost"])
 
    @stub.function(image=image, schedule=modal.Period(days=1), secret=modal.Secret.from_name("SNOW_API_KEY"))
    def f():
@@ -16,18 +14,9 @@ if LOCAL == False:
 
 def g():
     import hopsworks
-    import pandas as pd    
-    from sklearn.neighbors import KNeighborsClassifier
-    from sklearn.metrics import accuracy_score
-    from sklearn.metrics import confusion_matrix
-    from sklearn.metrics import classification_report
-    import seaborn as sns
-    from matplotlib import pyplot
     from hsml.schema import Schema
     from hsml.model_schema import ModelSchema
     import joblib
-
-    from sklearn import datasets
     import xgboost as xgb   
     import numpy as np
     from sklearn.metrics import precision_score, recall_score, accuracy_score
@@ -83,36 +72,36 @@ def g():
     print("real values:", y_test)
 
     # We will now upload our model to the Hopsworks Model Registry. First get an object for the model registry.
-    #mr = project.get_model_registry()
+    mr = project.get_model_registry()
     
-    # The contents of the 'iris_model' directory will be saved to the model registry. Create the dir, first.
-    #model_dir="iris_model"
-    #if os.path.isdir(model_dir) == False:
-        #os.mkdir(model_dir)
+    # The contents of the 'snow_model' directory will be saved to the model registry. Create the dir, first.
+    model_dir="snow_model"
+    if os.path.isdir(model_dir) == False:
+        os.mkdir(model_dir)
 
     # Save both our model and the confusion matrix to 'model_dir', whose contents will be uploaded to the model registry
-    #joblib.dump(model, model_dir + "/iris_model.pkl")
-    #fig.savefig(model_dir + "/confusion_matrix.png")    
+    joblib.dump(xgb_r, model_dir + "/snow_model.pkl")
 
     # Specify the schema of the model's input/output using the features (X_train) and labels (y_train)
-    #input_schema = Schema(X_train)
-    #output_schema = Schema(y_train)
-    #model_schema = ModelSchema(input_schema, output_schema)
+    input_schema = Schema(X_train)
+    output_schema = Schema(y_train)
+    model_schema = ModelSchema(input_schema, output_schema)
 
     # Create an entry in the model registry that includes the model's name, desc, metrics
-    #iris_model = mr.python.create_model(
-    #    name="iris_modal", 
-    #    metrics={"accuracy" : metrics['accuracy']},
-    #    model_schema=model_schema,
-    #    description="Iris Flower Predictor"
-    #)
+    snow_model = mr.python.create_model(
+        name="snow_model", 
+        metrics={"mean squared error" : rmse},
+        model_schema=model_schema,
+        description="Snow Level Predictor"
+    )
     
     # Upload the model to the model registry, including all files in 'model_dir'
-    #iris_model.save(model_dir)
+    snow_model.save(model_dir)
     
 if __name__ == "__main__":
     if LOCAL == True :
         g()
     else:
+        stub.deploy("snow_model_training_daily")
         with stub.run():
             f()
