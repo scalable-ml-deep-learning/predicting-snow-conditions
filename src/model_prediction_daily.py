@@ -16,12 +16,6 @@ def g():
     import pandas as pd
 
     project = hopsworks.login(project="finetune")
-
-
-
-
-
-
     
     fs = project.get_feature_store()
 
