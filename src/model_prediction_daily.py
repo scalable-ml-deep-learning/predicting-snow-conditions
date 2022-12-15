@@ -18,6 +18,7 @@ def g():
     from urllib.request import urlopen
     import json
 
+
     EVALUATION_METRIC="mean squared error"  
     SORT_METRICS_BY="min" # your sorting criteria
 
@@ -53,6 +54,7 @@ def g():
 
     pred_df['snow_level_prediction'] = pred
     print(pred_df)
+
 
     snow_predictions_fg = fs.get_or_create_feature_group(
     name="snow_predictions",
