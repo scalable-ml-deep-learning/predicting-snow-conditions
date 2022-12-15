@@ -55,18 +55,16 @@ def g():
     #D_train = xgb.DMatrix(X_train, label=y_train)
     #D_test = xgb.DMatrix(X_test, label=y_test)
 
-    #param = {
-    #'eta': 0.3, 
-    #'max_depth': 3,  
-    #'objective': 'multi:softprob',  
-    #'num_class': } 
+    kwargs = { 
+    'max_depth': 3,  
+    'objective': 'reg:squarederror',  
+    #'feature_fraction' : '' , 
+    #'eval_metric' : ,
+    #'bagging_fraction' : ,
+    #'min_child_fraction': 
+    }
 
-    #steps = 1 
-
-    #model = xgb.train(param, D_train, steps)
-
-    xgb_r = xgb.XGBRegressor(objective ='reg:linear',
-                  n_estimators = 10, seed = 123)
+    xgb_r = xgb.XGBRegressor(**kwargs)
     
     print("X_train:", X_train)
     print("y_train", y_train)
