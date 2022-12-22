@@ -7,12 +7,10 @@ import hopsworks
 import joblib
 import pandas as pd
 
-'''
-I want to compare the graphs of weather and snow
-to compare them and see which feature of weathers
-actually follows the trend of snow. That feature
-may be the most important to make our prediction.
-'''
+# Connect to Hopsworks
+project = hopsworks.login(project="finetune")
+fs = project.get_feature_store()
+
 def sort_by_time(df):
     '''
     Sort dataframe by time
@@ -21,39 +19,11 @@ def sort_by_time(df):
     df.sort_values(by='time', ascending=True, inplace=True)
     return df
 
-def get_weather():
-    '''
-    Get weather data from feature group
-    '''
-    
-    weather_fg = fs.get_feature_group(name="weather_data")
-    weather = weather_fg.read()
-    # sort the dataframe by date
-    weather = sort_by_time(weather)
-    
-    return weather
-    
-def plot_weather(weather):
-    '''
-    Plot weather forecast and history.
-    '''
-    time = weather['time'] # used for x-axis
-    for feature in weather.keys():
-        if feature == 'time' or feature == 'weathercode':
-            pass
-        else:
-          print("Feature: ", feature)
-          #print(weather[feature])
-          plt.plot(time, weather[feature], label=f'{feature}')
-        
-    return
-
 def get_actual_snow():
     '''
     Get from Hopsworks the actual snow level day by day
     since the beginning of the collection.
     '''
-    
     snow_data_fg = fs.get_feature_group(name="snow_data")
     snow_data = snow_data_fg.read()
     # sort by time
@@ -65,7 +35,7 @@ def plot_actual_snow(actual_snow):
     '''
     Plot the actual snow level vs time.
     '''
-    plt.plot(actual_snow['time'], actual_snow['hs'], label='actual snow', linestyle=":")
+    plt.plot(actual_snow['time'], actual_snow['hs'], label='actual snow', linestyle=":", color='blue')
     return
 
 def get_snow_prediction():
@@ -73,15 +43,21 @@ def get_snow_prediction():
     Get the latest prediction from Hopsworks.
     Returns the prediction.
     '''
-
     prediction_fg = fs.get_feature_group(name="snow_predictions", version=1)
     prediction = prediction_fg.read()
+    # sort by time
     prediction = sort_by_time(prediction)
     
     return prediction
     
+#def plot_today_date_bar():
+#    '''
+#    Get today's date. Plot a vertical red line on today's date.
+#    '''
+#    return
+    
 
-def plot_prediction(prediction):
+def plot_prediction():
     '''
     Get the prediction and create a plot showing the snow depth
     for the following days.
@@ -95,12 +71,18 @@ def plot_prediction(prediction):
     passenger_url = "https://raw.githubusercontent.com/scalable-ml-deep-learning/serverless-ml-for-titanic/feature-brando/img/" + str(res[0]) + ".png"
     img = Image.open(requests.get(passenger_url, stream=True).raw)   
     '''
-    plt.plot(prediction["time"], prediction["snow_level_prediction"])
+    actual_snow = get_actual_snow()
+    plot_actual_snow(actual_snow)
+    predicted_snow = get_snow_prediction()
+    plt.plot(predicted_snow['time'], predicted_snow['snow_level_prediction'], label='predicted snow', linestyle="--", color="red")
+    #plot_today_date_bar()
+    plt.legend()
+    #plt.show()
     plt.savefig("plot.png")
              
     return
     
-def get_image_snow_depth(snow_depth):
+def get_image_snow_depth(emojis):
     '''
     Get a snow depth level and return an image 
     indicating good level / bad level with emoji
@@ -109,37 +91,23 @@ def get_image_snow_depth(snow_depth):
     passenger_url = "https://raw.githubusercontent.com/scalable-ml-deep-learning/serverless-ml-for-titanic/feature-brando/img/" + str(res[0]) + ".png"
     img = Image.open(requests.get(passenger_url, stream=True).raw)
     '''
-    return image
-    
-
-if __name__ == '__main__':
-    project = hopsworks.login(project="finetune")
-    fs = project.get_feature_store()
-    
-    weather = get_weather()
-    actual_snow = get_actual_snow()
-    plot_weather(weather)
-    plot_actual_snow(actual_snow)
-    plt.legend()
-    plt.show()
+    return np.fliplr(emojis)
 
 # Uncomment for gradio interface locally on the browser
-'''  
+
 with gr.Blocks() as demo:
-  with gr.Row():
-    pred = get_prediction()
-    print("Prediction:\n", pred)
-    print("Time:\n", pred["time"])
-    print("Snow:\n", pred["snow_level_prediction"])
-    plot_prediction(pred)
-    plot_pred = gr.Image("plot.png") # plotted graph
-  with gr.Row():
-    emojis = gr.Image("emojis.jpeg") # table of emojis
-  with gr.Row():  
-    btn = gr.Button("New prediction").style(full_width=True)
+    with gr.Row():
+      plot_prediction()
+      plot_pred = gr.Image("plot.png", label="Predicted snow hight", ) # plotted graph
+    with gr.Row():
+      image_input = gr.Image("emojis.jpeg", visible=True) # table of emojis
+      image_output = gr.Image()
+    with gr.Row():  
+      btn = gr.Button("New prediction").style(full_width=True)
+    
+    btn.click(get_image_snow_depth, inputs=image_input, outputs=image_output)
 
 demo.launch()
-'''
 
 # Previous demo interface
 '''      
