@@ -5,9 +5,65 @@ import requests
 import matplotlib.pyplot as plt
 import hopsworks
 import joblib
+import pandas as pd
+
+'''
+I want to compare the graphs of weather and snow
+to compare them and see which feature of weathers
+actually follows the trend of snow. That feature
+may be the most important to make our prediction.
+'''
 
 
-def get_prediction():
+def get_weather():
+    '''
+    Get weather data from feature group
+    '''
+    
+    weather_fg = fs.get_feature_group(name="weather_data")
+    weather = weather_fg.read()
+    # checking datatype
+    print("Type weather: ", type(weather.time[0]))
+    # sort the dataframe by date
+    weather['time'] = pd.to_datetime(weather['time'])
+    # verify datatype
+    print("Type weather: ", type(weather.time[0]))
+    weather.sort_values(by='time', ascending=True, inplace=True)
+    print(weather)
+    
+    return weather
+    
+def plot_weather(weather):
+    '''
+    Plot weather forecast and history.
+    '''
+    time = weather['time'] # used for x-axis
+    for feature in weather.keys():
+        if feature == 'time' or feature == 'weathercode':
+            pass
+        else:
+          print("Feature: ", feature)
+          print(weather[feature])
+          #plt.plot(time, weather[feature], legend=feature)
+        
+    #plt.legend()
+    #plt.show()
+    return
+
+def get_actual_snow():
+    '''
+    Get from Hopsworks the actual snow level day by day
+    since the beginning of the collection.
+    '''
+    project = hopsworks.login()
+    fs = project.get_feature_store()
+    
+    snow_data_fg = fs.get_feature_group(name="snow_data")
+    snow_data = snow_data_fg.read()
+    
+    return snow_data
+
+def get_snow_prediction():
     '''
     Get the latest prediction from Hopsworks.
     Returns the prediction.
@@ -51,6 +107,16 @@ def get_image_snow_depth(snow_depth):
     '''
     return image
     
+
+if __name__ == '__main__':
+    project = hopsworks.login(project="finetune")
+    fs = project.get_feature_store()
+    
+    weather = get_weather()
+    plot_weather(weather)
+
+# Uncomment for gradio interface locally on the browser
+'''  
 with gr.Blocks() as demo:
   with gr.Row():
     pred = get_prediction()
@@ -65,6 +131,9 @@ with gr.Blocks() as demo:
     btn = gr.Button("New prediction").style(full_width=True)
 
 demo.launch()
+'''
+
+# Previous demo interface
 '''      
 demo = gr.Interface(
     fn=passenger,
