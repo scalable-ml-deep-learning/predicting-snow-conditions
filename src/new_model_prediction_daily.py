@@ -11,23 +11,35 @@ if LOCAL == False:
    def f():
        g()
        
-def build_pictures_for_app():
+def build_pictures_for_app(project, pred_snow):
     '''
     Create a plot and six emojis to store in Hopsworks
     for later use in the Huggingface app
     '''
-    pictures = ["cool-face", "heart-eyes", "light-smile", "unamused"]
+    emojis = ["cool-face", "heart-eyes", "light-smile", "unamused"]
+    
+    # create ranges to choose emoji
+    for index in range(len(pred_snow)):
+        snow = pred_snow['snow_level_prediction']
+        if snow < 60:
+            # enough snow
+            picture = emojis[0]
+            img_url = "https://raw.githubusercontent.com/scalable-ml-deep-learning/predicting-snow-conditions/feature-tommaso/src/images/" + picture + ".png"
+            img = Image.open(requests.get(passenger_url, stream=True).raw)
+            dataset_api = project.get_dataset_api()
+            dataset_api.upload(img, "Resources/img_prediction", overwrite=True)
+    '''
     for picture in pictures:
-        passenger_url = "https://raw.githubusercontent.com/scalable-ml-deep-learning/predicting-snow-conditions/feature-tommaso/src/images/" + passenger + ".png"
-        img = Image.open(requests.get(passenger_url, stream=True).raw)  
+        #passenger_url = "https://raw.githubusercontent.com/scalable-ml-deep-learning/predicting-snow-conditions/feature-tommaso/src/images/" + passenger + ".png"
+        #img = Image.open(requests.get(passenger_url, stream=True).raw)  
         #passenger_path =  "../img/" + str(passenger) + ".png"
         #img = Image.open(passenger_path, mode='r')
            
-        img.save("./images/"+ picture + ".png")
+        #img.save("./images/"+ picture + ".png")
         dataset_api = project.get_dataset_api()
         dataset_api.upload("./images/"+ picture + ".png", "Resources/img_emojis", overwrite=True)
-        
-    print("Uploaded emojis")
+    '''   
+    print("Uploaded pictures.")
     
     return
     
@@ -84,7 +96,8 @@ def g():
     description="Snow level predictions")
     snow_predictions_fg.insert(pred_df, write_options={"wait_for_job" : False})
     
-    build_pictures_for_app()
+    # create pictures for the app in Huggingface
+    build_pictures_for_app(project, pred_df)
     
     return
 
