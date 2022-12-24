@@ -2,6 +2,9 @@ import os
 import modal
 from PIL import Image
 import requests
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import numpy as np
 
 
 LOCAL=True
@@ -35,7 +38,20 @@ def plot_snow_prediction(pred_snow):
     '''
     Build fancy histogram for snow levels.
     '''
-    
+    for elem in pred_snow['time']:
+        print("Date: ", elem)
+        elem.strftime("%a %d, %b")
+        print("Format: ", elem)
+        
+    plt.bar(
+        pred_snow['time'], 
+        pred_snow['snow_level_prediction'], 
+        color = 'hotpink',
+        )
+    plt.ylabel("Centimeters of snow") 
+    plt.title("Snow level forecast for Passo Rolle (TN), Italy")
+    plt.yticks(np.arange(0, 101, 10))
+    plt.savefig('./images/img_pred/plot.png')
     
     return
        
@@ -56,7 +72,8 @@ def build_pictures_for_app(project, pred_snow):
         # upload emoji to correspondent index
         dataset_api = project.get_dataset_api()
         dataset_api.upload("./images/img_pred/"+str(index)+".png", "Resources/img_prediction", overwrite=True)
-  
+    
+    plot_snow_prediction(pred_snow)
     print("Uploaded pictures.")
     
     return
@@ -115,7 +132,8 @@ def g():
     snow_predictions_fg.insert(pred_df, write_options={"wait_for_job" : False})
     
     # create pictures for the app in Huggingface
-    build_pictures_for_app(project, pred_df)
+    #build_pictures_for_app(project, pred_df)
+    plot_snow_prediction(pred_df)
     
     return
 
