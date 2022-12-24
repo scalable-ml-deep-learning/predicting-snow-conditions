@@ -1,5 +1,8 @@
 import os
 import modal
+from PIL import Image
+import requests
+
 
 LOCAL=True
 
@@ -11,34 +14,49 @@ if LOCAL == False:
    def f():
        g()
        
+def emoji_selection(snow_level):
+    '''
+    Select the right emoji for the snow level.
+    '''
+    # create ranges to choose emoji
+    emojis = ["heart-eyes", "cool-face", "light-smile", "unamused"]
+    if snow_level <= 20:
+        emoji = emojis[3]
+    elif snow_level > 20 and snow_level <= 40:
+        emoji = emojis[2]
+    elif snow_level > 40 and snow_level <= 60:
+        emoji = emojis[1]
+    elif snow_level > 60:
+        emoji = emojis[0]
+
+    return emoji
+    
+def plot_snow_prediction(pred_snow):
+    '''
+    Build fancy histogram for snow levels.
+    '''
+    
+    
+    return
+       
 def build_pictures_for_app(project, pred_snow):
     '''
     Create a plot and six emojis to store in Hopsworks
     for later use in the Huggingface app
     '''
-    emojis = ["cool-face", "heart-eyes", "light-smile", "unamused"]
-    
-    # create ranges to choose emoji
-    for index in range(len(pred_snow)):
-        snow = pred_snow['snow_level_prediction']
-        if snow < 60:
-            # enough snow
-            picture = emojis[0]
-            img_url = "https://raw.githubusercontent.com/scalable-ml-deep-learning/predicting-snow-conditions/feature-tommaso/src/images/" + picture + ".png"
-            img = Image.open(requests.get(passenger_url, stream=True).raw)
-            dataset_api = project.get_dataset_api()
-            dataset_api.upload(img, "Resources/img_prediction", overwrite=True)
-    '''
-    for picture in pictures:
-        #passenger_url = "https://raw.githubusercontent.com/scalable-ml-deep-learning/predicting-snow-conditions/feature-tommaso/src/images/" + passenger + ".png"
-        #img = Image.open(requests.get(passenger_url, stream=True).raw)  
-        #passenger_path =  "../img/" + str(passenger) + ".png"
-        #img = Image.open(passenger_path, mode='r')
-           
-        #img.save("./images/"+ picture + ".png")
+    print("Length: ", len(pred_snow))
+    for index in range(1,len(pred_snow)+1):
+        snow = pred_snow['snow_level_prediction'][index]
+        print("Snow level: ", snow)
+        # select emoji
+        emoji = emoji_selection(snow)
+        img_url = "https://raw.githubusercontent.com/scalable-ml-deep-learning/predicting-snow-conditions/feature-tommaso/src/images/" + emoji + ".png"
+        img = Image.open(requests.get(img_url, stream=True).raw)
+        img.save("./images/img_pred/"+str(index)+".png")
+        # upload emoji to correspondent index
         dataset_api = project.get_dataset_api()
-        dataset_api.upload("./images/"+ picture + ".png", "Resources/img_emojis", overwrite=True)
-    '''   
+        dataset_api.upload("./images/img_pred/"+str(index)+".png", "Resources/img_prediction", overwrite=True)
+  
     print("Uploaded pictures.")
     
     return
