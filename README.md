@@ -1,4 +1,15 @@
-# predicting-snow-conditions
+# Predicting Snow Conditions
+
+
+Contributors:
+<a href="https://github.com/Bralli99">Brando Chiminelli</a>, 
+<a href="https://github.com/boyscout99">Tommaso Praturlon</a>
+
+Course: <a href="https://id2223kth.github.io/">Scalable Machine Learning and Deep Learning</a>, at <a href="https://www.kth.se/en">KTH Royal Institute of Technology</a>
+
+## About
+
+<img src="./src/images/pipelines_diagram.png" alt="pipelines diagram" width="100%"/> 
 
 ## Useful resources:
 [Hopsworks](https://www.hopsworks.ai/): can have access with fine-tune account and our personal accounts, project finetune.
@@ -23,4 +34,3 @@ GCP Deep Learning: [tutorial](https://medium.com/google-cloud/how-to-run-deep-le
 
 `modal env list`
 `modal env activate scalable_ml-deep-learning`
-
