@@ -23,3 +23,4 @@ GCP Deep Learning: [tutorial](https://medium.com/google-cloud/how-to-run-deep-le
 
 `modal env list`
 `modal env activate scalable_ml-deep-learning`
+
