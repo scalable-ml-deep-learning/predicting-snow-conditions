@@ -30,13 +30,21 @@ The historical data for the snow level is provided by [Open Data Trentino](https
 By looking at the project's architecture diagram it is clear that the system does not only collect static historical data, but deals with new data ingestions every day, resulting in updated and useful future predictions.
 
 ### Feature Pipeline
+Data is ingested into [Hopsworks](https://www.hopsworks.ai/) Feature Store with the help of two main pipelines, one for historical data and one for fresh new data. The first one runs on demand as it takes a batch of historical data and needs to run once, does some data cleaning, and writes the final result to a feature group (one called 'weather_data' and the other 'snow_data').
 
-### Trainig Pipeline
+The second pipeline, takes the latest weather and snow data, also does some data cleaning and adds a row on both the two feature groups. This last pipeline runs every day as the data coming from the two data sources is updated once per day. To make it running every day the pipeline runs on a container in the cloud, completely handled by [Modal](https://modal.com/).
+
+Lastly, a Feature View is created by joining the two feature groups created before, 'weather_data' and 'snow_data'. 
+A Feature View is a logical view over the data present on the join of the two feature groups, it is an easy way to redefine data types and specify a label, later needed for the training pipeline.
+
+### Training Pipeline
+...
 
 ### Inference Pipeline
+The inference pipeline is responsible for making the predictions by using the best model so far trained (based on its mean squared error). The inference pipeline writes all its predictions on the 'snow_predictions' feature group and runs on Modal everyday, so that the predictions improve as we get closer to the ski weekend (as the weather forecast will also improve). Lastly, the inference pipeline generates a plot for historical data and the corresponding predicted values and an advice in the shape of an image to be saved to the Hopsworks File System.
 
 ### User Interface
-
+The User Interface simply shows the latest predictions and the historical values for snow level in Passo Rolle and gives advices to skiers for the upcoming weekend.
 
 ## Useful resources:
 [Open-weather data](https://open-meteo.com/en/docs#latitude=46.2979&longitude=11.7871&hourly=temperature_2m,relativehumidity_2m,dewpoint_2m,apparent_temperature,precipitation,rain,showers,snowfall,snow_depth,freezinglevel_height,visibility&models=best_match&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours&current_weather=true&timezone=auto&past_days=61): download data of eight days and update daily
