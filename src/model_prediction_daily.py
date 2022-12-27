@@ -27,11 +27,12 @@ def g():
     fs = project.get_feature_store()
     
     mr = project.get_model_registry()
-    model = mr.get_model("snow_model", version=1)
-    # get best model based on custom metrics
+    #model = mr.get_model("snow_model", version=1)
+    #get best model based on custom metrics
     model = mr.get_best_model("snow_model",
                                EVALUATION_METRIC,
                                SORT_METRICS_BY)
+
     model_dir = model.download()
     model = joblib.load(model_dir + "/snow_model.pkl")
     print("Model:", model_dir)

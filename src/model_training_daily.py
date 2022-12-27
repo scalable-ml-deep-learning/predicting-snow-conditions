@@ -32,19 +32,34 @@ def g():
     feature_view = fs.get_feature_view(name="snow_weather_data", version=1)
 
     # You can read training data, randomly split into train/test sets of features (X) and labels (y)        
-    X_train, X_test, y_train, y_test = feature_view.train_test_split(0.2)
+    #X_train, X_test, y_train, y_test = feature_view.train_test_split(0.2)
+    X_train, y_train = feature_view.training_data()
 
-    X_train = X_train.sort_values(by=["time"], ascending=[True]).reset_index(drop=True)
-    X_test = X_test.sort_values(by=["time"], ascending=[True]).reset_index(drop=True)
+    print("X_train:", X_train)
+    print("y_train", y_train)
+    #print("X_test:", X_test)
+    #print("y_test", y_test)
+
+    X_train = X_train.sort_values(by=["time"], ascending=[True])
+    #X_test = X_test.sort_values(by=["time"], ascending=[True]).sort_index()
     
     X_train = X_train.drop(columns=["time"]).fillna(0)
-    X_test = X_test.drop(columns=["time"]).fillna(0)
+    #X_test = X_test.drop(columns=["time"]).fillna(0)
 
-    # need DMatrix for xgb.train()
-    #D_train = xgb.DMatrix(X_train, label=y_train)
-    #D_test = xgb.DMatrix(X_test, label=y_test)
+    #y_train.sort_index()
+    #y_test.sort_index()
+    index_list = X_train.index.tolist()
+    print(index_list)
+    y_train = y_train.reindex(index_list)
+    #y_train.loc[index_list]
 
-    kwargs = { 
+    train_perc = int(len(X_train) // 1.25) #take 80perc
+    X_test = X_train.iloc[train_perc:]
+    y_test = y_train.iloc[train_perc:]
+    X_train = X_train.iloc[:train_perc]
+    y_train = y_train.iloc[:train_perc]
+
+    kwargs = {
     'max_depth': 3,  
     'objective': 'reg:squarederror',  
     #'feature_fraction' : '' , 
