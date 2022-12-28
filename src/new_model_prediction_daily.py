@@ -66,6 +66,17 @@ def plot_snow_prediction(pred_snow):
     plt.savefig('./images/img_pred/plot.png')
     
     return
+    
+def plot_accuracy_graph(pred_now, actual_snow):
+    '''
+    Get the actual snow of past two weeks and predicted snow
+    of next six days + past 8 predicted to make comparison.
+    Save plot to be uploaded in Hopsworks, used in app in
+    a second tab.
+    Plot also vertical line to indicate today.
+    '''
+    
+    return
        
 def build_pictures_for_app(project, pred_snow):
     '''
