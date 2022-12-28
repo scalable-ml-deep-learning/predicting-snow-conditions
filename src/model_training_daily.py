@@ -1,7 +1,7 @@
 import os
 import modal
 
-LOCAL=False
+LOCAL=True
 
 if LOCAL == False:
    stub = modal.Stub("snow_model_training_daily")
@@ -37,17 +37,11 @@ def g():
 
     print("X_train:", X_train)
     print("y_train", y_train)
-    #print("X_test:", X_test)
-    #print("y_test", y_test)
 
     X_train = X_train.sort_values(by=["time"], ascending=[True])
-    #X_test = X_test.sort_values(by=["time"], ascending=[True]).sort_index()
     
     X_train = X_train.drop(columns=["time"]).fillna(0)
-    #X_test = X_test.drop(columns=["time"]).fillna(0)
 
-    #y_train.sort_index()
-    #y_test.sort_index()
     index_list = X_train.index.tolist()
     print(index_list)
     y_train = y_train.reindex(index_list)
@@ -62,11 +56,15 @@ def g():
     kwargs = {
     'max_depth': 3,  
     'objective': 'reg:squarederror',  
-    #'feature_fraction' : '' , 
-    #'eval_metric' : ,
-    #'bagging_fraction' : ,
-    #'min_child_fraction': 
     }
+    # XGBoost regression: 
+    # Parameters: 
+    # n_estimators  "Number of gradient boosted trees. Equivalent to number of boosting rounds."
+    # learning_rate "Boosting learning rate (also known as “eta”)"
+    # max_depth     "Maximum depth of a tree. Increasing this value will make 
+    #                the model more complex and more likely to overfit." 
+    # 99% of XGBoost models only need to tune: objective function, number of leaves or max depth, 
+    # feature fraction, bagging fraction, min child fraction.
 
     xgb_r = xgb.XGBRegressor(**kwargs)
     
