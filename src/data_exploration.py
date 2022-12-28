@@ -91,5 +91,6 @@ if __name__ == '__main__':
     plot_predicted_snow(predicted_snow)
     plt.legend()
     plt.show()
+    plt.savefig()
     
 
