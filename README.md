@@ -81,3 +81,7 @@ GCP Deep Learning: [tutorial](https://medium.com/google-cloud/how-to-run-deep-le
 
 * [Hopsworks](https://www.hopsworks.ai/)
 * [Modal](https://modal.com/)
+
+## Hugging Face - User Interface
+
+link to gradio space
