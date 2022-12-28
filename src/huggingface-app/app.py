@@ -11,14 +11,15 @@ import pandas as pd
 project = hopsworks.login(project="finetune")
 fs = project.get_feature_store()
 dataset_api = project.get_dataset_api()
-
+'''
 for day in range(1,7):
     img = f'Resources/img_prediction/{day}.png'
     dataset_api.download(img, overwrite=True)
     
 dataset_api.download("Resources/img_prediction/plot.png", overwrite=True)
+'''
  
-def get_image_snow_depth():
+def reload_images():
     '''
     Get a snow depth level and return an image 
     indicating good level / bad level with emoji
@@ -30,6 +31,19 @@ def get_image_snow_depth():
     dataset_api.download("Resources/img_prediction/plot.png", overwrite=True)
     print("Clicked")
     # refresh page
+    return
+    
+def show_reloaded_images():
+    '''
+    Show new images.
+    '''
+    #print("img:\n", plot_pred)
+    #print("Path: ", plot_pred.name)
+    #resized_img = plot_pred.clear()
+    plot_pred = gr.Image("emoji.jpeg", label="Predicted snow height")
+    #img.clear()
+    print("img:\n", plot_pred)
+    print("Changed.")
     
     return
 
@@ -37,21 +51,23 @@ def get_image_snow_depth():
 
 with gr.Blocks() as demo:
     with gr.Row():
-      plot_pred = gr.Image("plot.png", label="Predicted snow height").style(height=500) # plotted graph
+      plot_pred = gr.Image("plot.png", type="numpy", label="Predicted snow height")#.style(height=500) # plotted graph
+      print("Plot_pred:\n", plot_pred)
     with gr.Row():
       input_img1 = gr.Image("1.png", elem_id="Day 1")
       input_img2 = gr.Image("2.png", elem_id="Day 2")
       #gr.Label("Today's Predicted Image")
       input_img3 = gr.Image("3.png", elem_id="Day 3")
-      #gr.Label("Today's Predicted Image")
       input_img4 = gr.Image("4.png", elem_id="Day 4")
       input_img5 = gr.Image("5.png", elem_id="Day 5")
       input_img6 = gr.Image("6.png", elem_id="Day 6")
       
     with gr.Row():  
       btn = gr.Button("New prediction").style(full_width=True)
-    
-    btn.click(get_image_snow_depth)
+      print("Button:\n", btn)
+      
+    print("again Plot_pred:\n", plot_pred)
+    btn.click(show_reloaded_images, inputs=None, outputs=None)
 
 demo.launch()
 
