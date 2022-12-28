@@ -46,14 +46,14 @@ with gr.Blocks() as demo:
                 btn = gr.Button("New prediction").style(full_width=True)
             with gr.Row():
                 plot_pred = gr.Image(label="Predicted snow height").style(height=400) # plotted graph
-            with gr.Row():
+            with gr.Row(equal_width=True):
                 #input_img1 = gr.Image("1.png", elem_id="Day 1")
-                img1 = gr.Image().style(width=50)
-                img2 = gr.Image().style(width=50)
-                img3 = gr.Image().style(width=50)
-                img4 = gr.Image().style(width=50)
-                img5 = gr.Image().style(width=50)
-                img6 = gr.Image().style(width=50)
+                img1 = gr.Image()#.style(height=50, width=20)
+                img2 = gr.Image()#.style(width=20)
+                img3 = gr.Image()#.style(width=20)
+                img4 = gr.Image()#.style(width=20)
+                img5 = gr.Image()#.style(width=20)
+                img6 = gr.Image()#.style(width=20)
               
         with gr.TabItem("Accuracy of past 10 days"):
             with gr.Row():
