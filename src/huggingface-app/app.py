@@ -1,11 +1,7 @@
 import gradio as gr
-import numpy as np
 from PIL import Image
-import requests
-import matplotlib.pyplot as plt
 import hopsworks
 import joblib
-import pandas as pd
 
 # Connect to Hopsworks
 project = hopsworks.login(project="finetune")
@@ -49,15 +45,15 @@ with gr.Blocks() as demo:
             with gr.Row():  
                 btn = gr.Button("New prediction").style(full_width=True)
             with gr.Row():
-                plot_pred = gr.Image(label="Predicted snow height").style(height=500) # plotted graph
+                plot_pred = gr.Image(label="Predicted snow height").style(height=400) # plotted graph
             with gr.Row():
                 #input_img1 = gr.Image("1.png", elem_id="Day 1")
-                img1 = gr.Image()
-                img2 = gr.Image()
-                img3 = gr.Image()
-                img4 = gr.Image()
-                img5 = gr.Image()
-                img6 = gr.Image()
+                img1 = gr.Image().style(width=50)
+                img2 = gr.Image().style(width=50)
+                img3 = gr.Image().style(width=50)
+                img4 = gr.Image().style(width=50)
+                img5 = gr.Image().style(width=50)
+                img6 = gr.Image().style(width=50)
               
         with gr.TabItem("Accuracy of past 10 days"):
             with gr.Row():
