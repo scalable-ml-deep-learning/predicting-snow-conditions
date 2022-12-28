@@ -37,37 +37,46 @@ def show_reloaded_images():
     '''
     Show new images.
     '''
-    #print("img:\n", plot_pred)
-    #print("Path: ", plot_pred.name)
-    #resized_img = plot_pred.clear()
-    plot_pred = gr.Image("emoji.jpeg", label="Predicted snow height")
-    #img.clear()
-    print("img:\n", plot_pred)
-    print("Changed.")
+    for day in range(1,7):
+      img = f'Resources/img_prediction/{day}.png'
+      dataset_api.download(img, overwrite=True)
     
-    return
+    dataset_api.download("Resources/img_prediction/plot.png", overwrite=True)
+    plot_pred = Image.open("plot.png")
+    img1 = Image.open("1.png")
+    img2 = Image.open("2.png")
+    img3 = Image.open("3.png")
+    img4 = Image.open("4.png")
+    img5 = Image.open("5.png")
+    img6 = Image.open("6.png")
+    output = [plot_pred, img1, img2, img3, img4, img5, img6]
+  
+    return output
 
 # Uncomment for gradio interface locally on the browser
 
 with gr.Blocks() as demo:
     with gr.Row():
-      plot_pred = gr.Image("plot.png", type="numpy", label="Predicted snow height")#.style(height=500) # plotted graph
+      plot_pred = gr.Image(label="Predicted snow height").style(height=500) # plotted graph
       print("Plot_pred:\n", plot_pred)
     with gr.Row():
-      input_img1 = gr.Image("1.png", elem_id="Day 1")
-      input_img2 = gr.Image("2.png", elem_id="Day 2")
+      #input_img1 = gr.Image("1.png", elem_id="Day 1")
+      img1 = gr.Image()
+      img2 = gr.Image()
       #gr.Label("Today's Predicted Image")
-      input_img3 = gr.Image("3.png", elem_id="Day 3")
-      input_img4 = gr.Image("4.png", elem_id="Day 4")
-      input_img5 = gr.Image("5.png", elem_id="Day 5")
-      input_img6 = gr.Image("6.png", elem_id="Day 6")
-      
+      img3 = gr.Image()
+      img4 = gr.Image()
+      img5 = gr.Image()
+      img6 = gr.Image()
     with gr.Row():  
       btn = gr.Button("New prediction").style(full_width=True)
       print("Button:\n", btn)
       
+    btn.click(show_reloaded_images, 
+    inputs=None, 
+    outputs=[plot_pred, img1, img2, img3, img4, img5, img6])
     print("again Plot_pred:\n", plot_pred)
-    btn.click(show_reloaded_images, inputs=None, outputs=None)
+    #demo.load()
 
 demo.launch()
 
