@@ -45,9 +45,11 @@ The training pipeline runs everyday on Modal so that the model can improve in ti
 
 The model used for training is a gradient boosted decision tree, specifically the XGBoost python model implementation with the scikit-learn API via the XGBRegressor wrapper class.
 After trying with different configurations, the parameters that work the best and so selected for the training are:
-*`'max_depth': 3` = Maximum depth of a tree. Increasing this value will make the model more complex and more likely to overfit.
-*`'objective': 'reg:squarederror'` = The loss function 'reg:squarederror' is suitable for regression predictive modeling problems.
+* `'max_depth': 3` = Maximum depth of a tree. Increasing this value will make the model more complex and more likely to overfit.
+* `'objective': 'reg:squarederror'` = The loss function 'reg:squarederror' is suitable for regression predictive modeling problems.
+Other parameters, such as `n_estimators` and `learning_rate` were providing very little or no improvement to the training, so were discarded.
 
+The model is then trained with the train set and later its evaluation metric (RSME, Root Mean Square Error) is calculated upon the test set. Hopsworks provides a Model Registry where the model can be saved together with its version number and the value for RSME.
 
 ### Inference Pipeline
 The inference pipeline is responsible for making the predictions by using the best model so far trained (based on its mean squared error). The inference pipeline writes all its predictions on the 'snow_predictions' feature group and runs on Modal everyday, so that the predictions improve as we get closer to the ski weekend (as the weather forecast will also improve). Lastly, the inference pipeline generates a plot for historical values of snow levels and the corresponding predicted values. It also generate an advice for the skier in the form of an emoji, which is, together with the plot, saved to the Hopsworks File System.
