@@ -1,12 +1,11 @@
 import os
 import modal
-from PIL import Image
-import requests
-import datetime
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib.pyplot import figure
 import numpy as np
+import pandas as pd
+import requests
+from PIL import Image
+from datetime import date, datetime, timedelta
 
 
 LOCAL=True
@@ -18,7 +17,10 @@ if LOCAL == False:
    @stub.function(image=image, schedule=modal.Period(days=1), secret=modal.Secret.from_name("SNOW_API_KEY"))
    def f():
        g()
-       
+
+################
+# SELECT EMOJI #
+################
 def emoji_selection(snow_level):
     '''
     Select the right emoji for the snow level.
@@ -36,23 +38,49 @@ def emoji_selection(snow_level):
 
     return emoji
     
-def plot_snow_prediction(pred_snow):
+###############
+# FORMAT TIME #
+###############
+def format_time(df_time):
     '''
-    Build fancy histogram for snow levels.
-    Format dates and plot bar chart.
+    Format dates given dataframe.
     '''
     # format dates
     old_format = '%Y-%m-%d'
     #new_format = '%a %d, %b'
     new_format = '%d %b'
-    for elem in pred_snow['time']:
+    for elem in df_time['time']:
         #print("Date: ", elem)
-        new_elem = datetime.datetime.strptime(elem, old_format)
+        new_elem = datetime.strptime(elem, old_format)
         new_elem = new_elem.strftime(new_format)
         #print("Format: ", new_elem)
-        pred_snow['time'].replace(to_replace=elem, value=new_elem, inplace=True)
+        df_time['time'].replace(to_replace=elem, value=new_elem, inplace=True)
+    
+    return df_time
 
+##########################
+# SORT DATAFRAME BY TIME #
+##########################
+def sort_by_time(df):
+    '''
+    Sort dataframe by time
+    '''
+    #df['time'] = pd.to_datetime(df['time'])
+    df.sort_values(by='time', ascending=True, inplace=True)
+    return df
+
+########################
+# PLOT SNOW PREDICTION #
+########################
+def plot_snow_prediction(pred_snow):
+    '''
+    Build fancy histogram for snow levels of next six days.
+    Format dates and plot bar chart.
+    '''
+    # format dates
+    pred_snow = format_time(pred_snow)
     # plot bar chart
+    plt.figure()
     plt.bar(
         pred_snow['time'], 
         pred_snow['snow_level_prediction'], 
@@ -66,8 +94,82 @@ def plot_snow_prediction(pred_snow):
     plt.savefig('./images/img_pred/plot.png')
     
     return
+
+#############################
+# GET ACTUAL SNOW DATAFRAME #
+#############################   
+def get_actual_snow(fs):
+    '''
+    Get from Hopsworks the actual snow level day by day
+    since the beginning of the collection.
+    '''
+    snow_data_fg = fs.get_feature_group(name="snow_data")
+    snow_data = snow_data_fg.read()
+    # sort by time
+    snow_data = sort_by_time(snow_data)
     
-def plot_accuracy_graph(pred_now, actual_snow):
+    return snow_data
+
+############################
+# PLOT ACTUAL SNOW HISTORY #
+############################  
+def plot_actual_snow(actual_snow):
+    '''
+    Plot the actual snow level vs time.
+    '''
+    #actual_snow = format_time(actual_snow)
+    plt.plot(actual_snow['time'], actual_snow['hs'], label='actual snow')
+    return
+
+#################################
+# GET SNOW PREDICTION DATAFRAME #
+#################################    
+def get_snow_prediction(fs):
+    '''
+    Get the latest prediction from Hopsworks.
+    Returns the prediction.
+    '''
+    prediction_fg = fs.get_feature_group(name="snow_predictions", version=1)
+    prediction = prediction_fg.read()
+    prediction = sort_by_time(prediction)
+    
+    return prediction
+    
+###############################
+# PLOT PREDICTED SNOW HISTORY #
+###############################
+def plot_predicted_snow(predicted_snow):
+    '''
+    Plot the predicted snow level vs time.
+    '''
+    #predicted_snow = format_time(predicted_snow)
+    plt.plot(predicted_snow['time'], predicted_snow['snow_level_prediction'], label='predicted snow', linestyle=":")
+    return
+
+###################################
+# RETURN LAST N DAYS OF DATAFRAME #
+###################################  
+def last_n_days(df, days):
+    '''
+    Return last days of history.
+    '''
+    # delete dates later than today (in case of forecast)
+    #today = date.today()
+    # today = pd.Timestamp('today')
+    yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
+    print("Yesterday: ", yesterday)
+    print("Df before:\n", df)
+    df['time'] = pd.to_datetime(df['time'])
+    df = df[df['time'] <= yesterday]
+    # select last n elements
+    df = df.tail(days)
+    print("Df after:\n", df)
+    return df
+
+#############################################
+# PLOT HISTORY OF PREDICTION VS ACTUAL SNOW #
+#############################################
+def plot_pred_history(project):
     '''
     Get the actual snow of past two weeks and predicted snow
     of next six days + past 8 predicted to make comparison.
@@ -75,15 +177,38 @@ def plot_accuracy_graph(pred_now, actual_snow):
     a second tab.
     Plot also vertical line to indicate today.
     '''
+    # get actual and predicted snow histories
+    fs = project.get_feature_store()
+    actual_snow = get_actual_snow(fs)
+    predicted_snow = get_snow_prediction(fs)
+    # take last 10 days
+    actual_snow = last_n_days(actual_snow, 10)
+    predicted_snow = last_n_days(predicted_snow, 10)
+    # plot both functions
+    plt.figure()
+    plot_actual_snow(actual_snow)
+    plot_predicted_snow(predicted_snow)
+    plt.ylabel("Centimeters of snow") 
+    plt.title("Snow level forecast accuracy over time")
+    plt.yticks(np.arange(0, 101, 10))
+    plt.xticks(rotation = 45) # Rotates X-Axis Ticks by 45-degrees
+    plt.legend()
+    #plt.show()
+    plt.savefig('./images/img_pred/plot_history.png')
     
     return
-       
+
+#################################################
+# PREPARE ALL PLOTS AND FIGURES FOR APPLICATION #
+#################################################   
 def build_pictures_for_app(project, pred_snow):
     '''
     Create a plot and six emojis to store in Hopsworks
     for later use in the Huggingface app
     '''
     dataset_api = project.get_dataset_api()
+    # create emoji for each prediction day
+    
     for index in range(1,len(pred_snow)+1):
         snow = pred_snow['snow_level_prediction'][index]
         # print("Snow level: ", snow)
@@ -94,14 +219,20 @@ def build_pictures_for_app(project, pred_snow):
         img.save("./images/img_pred/"+str(index)+".png")
         # upload emoji to correspondent index
         dataset_api.upload("./images/img_pred/"+str(index)+".png", "Resources/img_prediction", overwrite=True)
-    
+    # plot bar chart for prediction
     plot_snow_prediction(pred_snow)
     dataset_api.upload("./images/img_pred/plot.png", "Resources/img_prediction", overwrite=True)
+    # plot history of predictions accuracy graph
+    plot_pred_history(project)
+    dataset_api.upload("./images/img_pred/plot_history.png", "Resources/img_prediction", overwrite=True)
+    
     print("Uploaded pictures.")
     
     return
     
-    
+#################################
+# MAIN FUNCTION TO RUN ON MODAL #
+#################################
 def g():
     import hopsworks
     import pandas as pd
@@ -114,7 +245,6 @@ def g():
     SORT_METRICS_BY="min" # your sorting criteria
 
     project = hopsworks.login(project="finetune")
-
     fs = project.get_feature_store()
     
     mr = project.get_model_registry()
@@ -136,15 +266,13 @@ def g():
     forecast_df = pd.DataFrame.from_dict(data_json['daily'], orient='columns')
     forecast_df = forecast_df.drop(index=0)
     pred_df = forecast_df[['time']]
-    print("Forecast:\n", forecast_df)
+    print("Weather forecast:\n", forecast_df)
 
     forecast_df = forecast_df.sort_values(by=["time"], ascending=[True]).reset_index(drop=True)
     forecast_df = forecast_df.drop(columns=["time"]).fillna(0)
     pred = model.predict(forecast_df)
-    print(pred)
-
     pred_df['snow_level_prediction'] = pred
-    print(pred_df)
+    print("Snow prediction:\n", pred_df)
 
 
     snow_predictions_fg = fs.get_or_create_feature_group(
@@ -153,10 +281,11 @@ def g():
     primary_key=["time"], 
     description="Snow level predictions")
     snow_predictions_fg.insert(pred_df, write_options={"wait_for_job" : False})
-    
+      
+    actual_snow_fg = fs.get_feature_group(name='snow_data')
+    actual_snow_df = actual_snow_fg.read()
     # create pictures for the app in Huggingface
     build_pictures_for_app(project, pred_df)
-    #plot_snow_prediction(pred_df)
     
     return
 

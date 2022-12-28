@@ -46,7 +46,7 @@ def g():
     forecast_df = pd.DataFrame.from_dict(data_json['daily'], orient='columns')
     forecast_df = forecast_df.drop(index=0)
     pred_df = forecast_df[['time']]
-    print("Forecast:\n", forecast_df)
+    print("Weather forecast:\n", forecast_df)
 
     forecast_df = forecast_df.sort_values(by=["time"], ascending=[True]).reset_index(drop=True)
     forecast_df = forecast_df.drop(columns=["time"]).fillna(0)
@@ -54,7 +54,7 @@ def g():
     print(pred)
 
     pred_df['snow_level_prediction'] = pred
-    print(pred_df)
+    print("Snow predictions: ", pred_df)
 
 
     snow_predictions_fg = fs.get_or_create_feature_group(
