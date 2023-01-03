@@ -4,15 +4,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import requests
+import os
 from PIL import Image
 from datetime import date, datetime, timedelta
 
 
-LOCAL=True
+LOCAL=False
 
 if LOCAL == False:
-   stub = modal.Stub("prediction_daily")
-   image = modal.Image.debian_slim().pip_install(["hopsworks==3.0.4", "lxml", "joblib", "urllib3", "jsonschema", "xgboost", "scikit-learn"]) 
+   stub = modal.Stub("prediction_daily_v2")
+   image = modal.Image.debian_slim().pip_install(["hopsworks==3.0.4", "lxml", "joblib", "urllib3", "jsonschema", "xgboost", "scikit-learn", "matplotlib"]) 
 
    @stub.function(image=image, schedule=modal.Period(days=1), secret=modal.Secret.from_name("SNOW_API_KEY"))
    def f():
@@ -285,6 +286,8 @@ def g():
     actual_snow_fg = fs.get_feature_group(name='snow_data')
     actual_snow_df = actual_snow_fg.read()
     # create pictures for the app in Huggingface
+    if not os.path.exists('./images/img_pred/'):
+      os.makedirs('./images/img_pred/')
     build_pictures_for_app(project, pred_df)
     
     return
@@ -294,6 +297,6 @@ if __name__ == "__main__":
     if LOCAL == True :
         g()
     else:
-        stub.deploy("prediction_daily")
+        stub.deploy("prediction_daily_v2")
         with stub.run():
             f()
