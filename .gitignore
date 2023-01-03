@@ -1,3 +1,4 @@
 # Everything beginning with .
 .*
 src/.*
+src/images/img_pred/*

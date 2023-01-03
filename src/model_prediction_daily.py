@@ -69,6 +69,6 @@ if __name__ == "__main__":
     if LOCAL == True :
         g()
     else:
-        stub.deploy("prediction_daily")
+        stub.deploy("new_prediction_daily")
         with stub.run():
             f()
