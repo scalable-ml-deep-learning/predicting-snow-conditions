@@ -32,9 +32,9 @@ def emoji_selection(snow_level):
         emoji = emojis[3]
     elif snow_level > 20 and snow_level <= 40:
         emoji = emojis[2]
-    elif snow_level > 40 and snow_level <= 60:
+    elif snow_level > 40 and snow_level <= 65:
         emoji = emojis[1]
-    elif snow_level > 60:
+    elif snow_level > 65:
         emoji = emojis[0]
 
     return emoji
@@ -118,7 +118,7 @@ def plot_actual_snow(actual_snow):
     '''
     Plot the actual snow level vs time.
     '''
-    #actual_snow = format_time(actual_snow)
+    actual_snow = format_time(actual_snow)
     plt.plot(actual_snow['time'], actual_snow['hs'], label='actual snow')
     return
 
@@ -132,6 +132,7 @@ def get_snow_prediction(fs):
     '''
     prediction_fg = fs.get_feature_group(name="snow_predictions", version=1)
     prediction = prediction_fg.read()
+    # sort by time
     prediction = sort_by_time(prediction)
     
     return prediction
@@ -143,7 +144,7 @@ def plot_predicted_snow(predicted_snow):
     '''
     Plot the predicted snow level vs time.
     '''
-    #predicted_snow = format_time(predicted_snow)
+    predicted_snow = format_time(predicted_snow)
     plt.plot(predicted_snow['time'], predicted_snow['snow_level_prediction'], label='predicted snow', linestyle=":")
     return
 
@@ -155,16 +156,10 @@ def last_n_days(df, days):
     Return last days of history.
     '''
     # delete dates later than today (in case of forecast)
-    #today = date.today()
-    # today = pd.Timestamp('today')
     yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
-    print("Yesterday: ", yesterday)
-    print("Df before:\n", df)
-    df['time'] = pd.to_datetime(df['time'])
     df = df[df['time'] <= yesterday]
     # select last n elements
     df = df.tail(days)
-    print("Df after:\n", df)
     return df
 
 #############################################
@@ -190,7 +185,7 @@ def plot_pred_history(project):
     plot_actual_snow(actual_snow)
     plot_predicted_snow(predicted_snow)
     plt.ylabel("Centimeters of snow") 
-    plt.title("Snow level forecast accuracy over time")
+    plt.title("Snow level forecast accuracy over the past 10 days")
     plt.yticks(np.arange(0, 101, 10))
     plt.xticks(rotation = 45) # Rotates X-Axis Ticks by 45-degrees
     plt.legend()
