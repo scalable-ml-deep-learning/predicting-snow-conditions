@@ -9,7 +9,7 @@ from PIL import Image
 from datetime import date, datetime, timedelta
 
 
-LOCAL=True
+LOCAL=False
 
 if LOCAL == False:
    stub = modal.Stub("prediction_daily_v2")
@@ -91,8 +91,8 @@ def plot_snow_prediction(pred_snow):
     plt.title("Snow level forecast for Passo Rolle (TN), Italy")
     plt.yticks(np.arange(0, 101, 10))
     plt.xticks(rotation = 45) # Rotates X-Axis Ticks by 45-degrees
-    plt.show()
-    #plt.savefig('./images/img_pred/plot.png')
+    #plt.show()
+    plt.savefig('./images/img_pred/plot.png')
     
     return
 
@@ -157,7 +157,6 @@ def last_n_days(df, days):
     '''
     # delete dates later than today (in case of forecast)
     yesterday = (datetime.now() - timedelta(1)).strftime('%Y-%m-%d')
-    print("Yesterday: ", yesterday)
     df = df[df['time'] <= yesterday]
     # select last n elements
     df = df.tail(days)
@@ -190,8 +189,8 @@ def plot_pred_history(project):
     plt.yticks(np.arange(0, 101, 10))
     plt.xticks(rotation = 45) # Rotates X-Axis Ticks by 45-degrees
     plt.legend()
-    plt.show()
-    #plt.savefig('./images/img_pred/plot_history.png')
+    #plt.show()
+    plt.savefig('./images/img_pred/plot_history.png')
     
     return
 
@@ -282,12 +281,9 @@ def g():
     actual_snow_fg = fs.get_feature_group(name='snow_data')
     actual_snow_df = actual_snow_fg.read()
     # create pictures for the app in Huggingface
-    '''
     if not os.path.exists('./images/img_pred/'):
       os.makedirs('./images/img_pred/')
     build_pictures_for_app(project, pred_df)
-    '''
-    plot_pred_history(project)
     
     return
 
