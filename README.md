@@ -84,4 +84,4 @@ GCP Deep Learning: [tutorial](https://medium.com/google-cloud/how-to-run-deep-le
 
 ## Hugging Face - User Interface
 
-link to gradio space
+Run the application on Hugging Face from [here](https://huggingface.co/spaces/whispy/Snow-Level-Forecast-in-Passo-Rolle).
