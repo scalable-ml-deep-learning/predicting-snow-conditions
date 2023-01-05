@@ -7,7 +7,10 @@ import joblib
 project = hopsworks.login(project="finetune")
 fs = project.get_feature_store()
 dataset_api = project.get_dataset_api()
-    
+
+###########################################
+# DOWNLOAD AND OPEN IMAGES FROM HOPSWORKS #
+###########################################
 def show_reloaded_images():
     '''
     Show new images.
@@ -18,7 +21,7 @@ def show_reloaded_images():
       dataset_api.download(img, overwrite=True)
     # download snow prediction forecast
     dataset_api.download("Resources/img_prediction/plot.png", overwrite=True)
-    # optput images
+    # output images
     plot_pred = Image.open("plot.png")
     img1 = Image.open("1.png")
     img2 = Image.open("2.png")
@@ -30,6 +33,9 @@ def show_reloaded_images():
   
     return output
 
+######################################
+# DOWNLOAD AND SHOW ACCURACY HISTORY #
+######################################
 def show_history():
     '''
     Get history of predictions.
@@ -48,12 +54,14 @@ with gr.Blocks() as demo:
                 plot_pred = gr.Image(label="Predicted snow height").style(height=400) # plotted graph
             with gr.Row(equal_width=True):
                 #input_img1 = gr.Image("1.png", elem_id="Day 1")
-                img1 = gr.Image()#.style(height=50, width=20)
-                img2 = gr.Image()#.style(width=20)
-                img3 = gr.Image()#.style(width=20)
-                img4 = gr.Image()#.style(width=20)
-                img5 = gr.Image()#.style(width=20)
-                img6 = gr.Image()#.style(width=20)
+                img1 = gr.Image(label="Tomorrow")
+                img2 = gr.Image(label="In 2 days")
+                img3 = gr.Image(label="In 3 days")
+                img4 = gr.Image(label="In 4 days")
+                img5 = gr.Image(label="In 5 days")
+                img6 = gr.Image(label="In 6 days")
+            with gr.Row():
+                img_legend = gr.Image("emoji-legend.png", label="Legend").style(height=300)
               
         with gr.TabItem("Accuracy of past 10 days"):
             with gr.Row():
