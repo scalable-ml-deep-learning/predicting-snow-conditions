@@ -13,7 +13,7 @@ The project is about building an automated and scalable system that predicts the
 In particular, the system predicts the ground snow level, essential for some fun and safe skiing.
 
 ## Project's Architecture
-An overview of the project's architecture is present below and all its different components are explained below.
+The following is an overview of the project's architecture and all its different components are explained below.
 <img src="./src/images/pipelines_diagram.png" alt="pipelines diagram" width="100%"/> 
 
 ### Data Model
