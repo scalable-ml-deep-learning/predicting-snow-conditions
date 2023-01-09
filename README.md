@@ -17,7 +17,7 @@ The following is an overview of the project's architecture and all its different
 <img src="./src/images/pipelines_diagram.png" alt="pipelines diagram" width="100%"/> 
 
 ### Data Model
-The first thing to look for when dealing with a prediction service is to look for good quality data that is updated regualrly. In this project we are dealing with data that is updated every day from a verified source.
+The first thing to do when dealing with a prediction service is to look for good quality data that is updated regularly. In this project we are dealing with data that is updated every day from a verified source.
 
 To predict the snow level we need to think which factors contribute the most to its increase/decrease. The ones used in this project are taken from [Open-Meteo](https://open-meteo.com/) and are the following:
 * Weathercode: Weather condition as a numeric code. Follow WMO weather interpretation codes.
@@ -25,7 +25,7 @@ To predict the snow level we need to think which factors contribute the most to 
 * Precipitation: Sum of daily precipitation (divided into rain, showers and snowfall).
 * Precipitation hours: The number of hours with precipitation.
 
-The historical data for the snow level is provided by [Open Data Trentino](https://dati.trentino.it/), which, unfortunately, gives only the last eight days of data. Nevertheless, the system has been collecting data every day since the 6th of December, 2022, so the dataset keeps growing and predictions keep getting better.
+The historical data for the snow level is provided by [Open Data Trentino](https://dati.trentino.it/), which, unfortunately, gives only the last eight days of data. Nevertheless, the system has been collecting data every day since the 6th of December, 2022, so the dataset keeps growing and predictions should keep getting better.
 
 By looking at the project's architecture diagram, it is clear that the system does not only collect static historical data, but deals with new data ingestions every day, resulting in updated and useful future predictions.
 
