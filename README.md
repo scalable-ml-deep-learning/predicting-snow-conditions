@@ -9,7 +9,7 @@ Course: <a href="https://id2223kth.github.io/">Scalable Machine Learning and Dee
 
 ## About
 
-The project is about building an automated and scalable system that predicts the snow conditions for [Passo Rolle](https://goo.gl/maps/G3Qw8WNvZ19ojKEK7) (ski area in Trento, Italy) for the upcoming week, so that a skier that the plans to go skiing on the next weekend, can look in advance if the conditions are good. 
+The project is about building an automated and scalable system that predicts the snow conditions for [Passo Rolle](https://goo.gl/maps/G3Qw8WNvZ19ojKEK7) (ski area in Trento, Italy) for the upcoming week, so that a skier that plans to go skiing on the next weekend, can look in advance if the conditions are good. 
 In particular, the system predicts the ground snow level, essential for some fun and safe skiing.
 
 ## Project's Architecture
